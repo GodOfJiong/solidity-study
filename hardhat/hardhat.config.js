@@ -25,7 +25,9 @@ module.exports = {
     }
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_KEY
+    apiKey: {
+      sepolia: process.env.ETHERSCAN_KEY
+    }
   },
   sourcify: {
     enabled: true
