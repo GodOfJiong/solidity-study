@@ -20,6 +20,7 @@ module.exports = {
   solidity: "0.8.28",
   networks: {
     sepolia: {
+      chainId: Number(process.env.SEPOLIA_ID),
       url: process.env.SEPOLIA_URL,
       accounts: [process.env.TEST_ACCOUNT_1]
     }
