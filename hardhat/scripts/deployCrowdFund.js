@@ -3,6 +3,7 @@ const {ethers} = require("hardhat");
 async function main () {
     const crowdFund = await deploy();
     await verify(crowdFund);
+    await test(crowdFund);
 }
 
 async function deploy () {
@@ -10,6 +11,7 @@ async function deploy () {
 
     // 这里的deploy只是发出部署请求，工厂没法跟踪单个合约实例是否已经上链了。
     // 所以要通过工厂返回的合约实例句柄，调用waitForDeployment，等待上链部署成功。
+    // 部署合约会有这种情况，而部署合约也属于一种交易请求，所有交易请求都会有这种情况。
     console.log("deploy start");
     const crowdFund = await crowdFundFactory.deploy(process.env.CROWD_FUND_LOCK_TIME);
     await crowdFund.waitForDeployment();
@@ -30,6 +32,24 @@ async function verify (crowdFund) {
     } else {
         console.log("no verify in local network");
     }
+}
+
+async function test (crowdFund) {
+    const [testAccount1, testAccount2] = await ethers.getSigners();
+    console.log("1st account fund start");
+    let fundTx = await crowdFund.connect(testAccount1).fund({value: ethers.parseEther("0.00000472")});
+    await fundTx.wait();
+    let balance = await ethers.provider.getBalance(crowdFund.target);
+    console.log(`1st account fund done, contract balance: ${balance}`);
+
+    console.log("2nd account fund start");
+    fundTx = await crowdFund.connect(testAccount2).fund({value: ethers.parseEther("0.00000472")});
+    await fundTx.wait();
+    balance = await ethers.provider.getBalance(crowdFund.target);
+    console.log(`2nd account fund done, contract balance: ${balance}`);
+
+    console.log(`1st account: ${testAccount1.address}, balance: ${await crowdFund.accountBalanceMap(testAccount1.address)}`);
+    console.log(`2nd account: ${testAccount2.address}, balance: ${await crowdFund.accountBalanceMap(testAccount2.address)}`);
 }
 
 main().then().catch((error) => {
