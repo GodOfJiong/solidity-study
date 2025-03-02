@@ -1,5 +1,6 @@
 require("dotenv").config();
 require("@chainlink/env-enc").config();
+require("./tasks/index");
 
 // 在一个需要科学上网才能访问互联网的神奇国度中，即便驾了梯子，在使用hardhat进行合约验证时，还是会遇到网络连不上的超时问题，报错如下：
 // Etherscan: A network request failed. This is an error from the block explorer, not Hardhat. Error: Connect Timeout Error
