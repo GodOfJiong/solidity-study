@@ -51,6 +51,10 @@ contract CrowdFund {
         owner = pOwner;
     }
 
+    function getDataFeed () public view returns (AggregatorV3Interface) {
+        return dataFeed;
+    }
+
     function getDeployTime () public view returns (uint256) {
         return deployTime;
     }

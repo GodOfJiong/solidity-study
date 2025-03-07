@@ -21,4 +21,11 @@ describe("test CrowdFund", async function () {
 
         assert.equal((await crowdFund.getOwner()), testAccount1.address);
     });
+
+    it("test constructor: init dataFeed", async function () {
+        const crowdFundFactory = await ethers.getContractFactory("CrowdFund");
+        const crowdFund = await crowdFundFactory.deploy(process.env.CROWD_FUND_LOCK_TIME);
+        await crowdFund.waitForDeployment();
+        assert.equal((await crowdFund.getDataFeed()), process.env.DATA_FEED_ADDR);
+    });
 });
