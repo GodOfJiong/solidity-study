@@ -5,7 +5,7 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interf
 
 contract CrowdFund {
 
-    address public owner;
+    address owner;
     mapping(address => uint256) public accountBalanceMap;
     
     // 我们想表达的初衷，是每次付款不少于$0.01，以人类最自然而然的理解方式，具体就是：
@@ -43,9 +43,23 @@ contract CrowdFund {
         _;
     }
 
-    function changeOwner (address newOwner) public onlyOwner {
-        owner = newOwner;
+    function getOwner () public view returns (address) {
+        return owner;
     }
+
+    function setOwner (address pOwner) public onlyOwner {
+        owner = pOwner;
+    }
+
+    function getDeployTime () public view returns (uint256) {
+        return deployTime;
+    }
+
+    function getLockTime () public view returns (uint256) {
+        return lockTime;
+    }
+
+
     
     function fund () external payable {
         uint256 currentTime = block.timestamp;
