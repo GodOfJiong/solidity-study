@@ -19,7 +19,7 @@ require('hardhat-deploy');
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.28",
+  solidity: process.env.COMPILE_VERSION,
   networks: {
     sepolia: {
       chainId: Number(process.env.SEPOLIA_ID),

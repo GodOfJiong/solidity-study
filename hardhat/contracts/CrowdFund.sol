@@ -24,9 +24,8 @@ contract CrowdFund {
     address fundTokenAddr;
     bool public getFundFlag = false;
 
-    constructor (uint256 pLockTime) {
-        // net: Sepolia, type: eth/usd
-        dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+    constructor (uint256 pLockTime, address dataFeedAddr) {
+        dataFeed = AggregatorV3Interface(dataFeedAddr);
         owner = msg.sender;
         deployTime = block.timestamp;
         lockTime = pLockTime;
