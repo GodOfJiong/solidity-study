@@ -15,6 +15,7 @@ setGlobalDispatcher(proxyAgent);
 
 require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-verify");
+require('hardhat-deploy');
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -33,5 +34,13 @@ module.exports = {
   },
   sourcify: {
     enabled: true
+  },
+  namedAccounts: {
+    testAccount1: {
+      default: 0
+    },
+    testAccount2: {
+      default: 1
+    }
   }
 };
