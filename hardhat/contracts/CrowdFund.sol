@@ -6,7 +6,7 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interf
 contract CrowdFund {
 
     address owner;
-    mapping(address => uint256) public accountBalanceMap;
+    mapping(address => uint256) accountBalanceMap;
     
     // 我们想表达的初衷，是每次付款不少于$0.01，以人类最自然而然的理解方式，具体就是：
     // 按每个eth比如说$3500.12345678的价格，每次支付的eth数量，乘以该价格，得出来的金额，每次不少于$0.01。
@@ -48,6 +48,10 @@ contract CrowdFund {
 
     function setOwner (address pOwner) public onlyOwner {
         owner = pOwner;
+    }
+
+    function getAccountBalance (address account) public view returns (uint256) {
+        return accountBalanceMap[account];
     }
 
     function getDataFeed () public view returns (AggregatorV3Interface) {
