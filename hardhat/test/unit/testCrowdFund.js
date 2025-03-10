@@ -65,7 +65,7 @@ describe("test CrowdFund", async () => {
     });
 
     it("test getFund: not owner", async () => {
-        await crowdFund2.fund({value: ethers.parseEther(process.env.TEST_FUND_AMOUNT_DONE)});
+        await crowdFund2.fund({value: ethers.parseEther(process.env.CONTRACT_BALANCE_PASS)});
         await helpers.time.increase(Number(process.env.CROWD_FUND_LOCK_TIME) + 1);
         await helpers.mine();
         await expect(
@@ -74,9 +74,18 @@ describe("test CrowdFund", async () => {
     });
 
     it("test getFund: window open", async () => {
-        await crowdFund2.fund({value: ethers.parseEther(process.env.TEST_FUND_AMOUNT_DONE)});
+        await crowdFund2.fund({value: ethers.parseEther(process.env.CONTRACT_BALANCE_PASS)});
         await expect(
             crowdFund1.getFund()
         ).to.be.revertedWith("can not call this function in the window");
+    });
+
+    it("test getFund: target not reach", async () => {
+        await crowdFund2.fund({value: ethers.parseEther(process.env.CONTRACT_BALANCE_FAIL)});
+        await helpers.time.increase(Number(process.env.CROWD_FUND_LOCK_TIME) + 1);
+        await helpers.mine();
+        await expect(
+            crowdFund1.getFund()
+        ).to.be.revertedWith("target fund not reached");
     });
 });
