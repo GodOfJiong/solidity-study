@@ -64,12 +64,19 @@ describe("test CrowdFund", async () => {
         assert.equal((await crowdFund.getAccountBalance(testAccount1)), fundAmtInWei);
     });
 
-    it("test getFund: only owner", async () => {
+    it("test getFund: not owner", async () => {
         await crowdFund2.fund({value: ethers.parseEther(process.env.TEST_FUND_AMOUNT_DONE)});
         await helpers.time.increase(Number(process.env.CROWD_FUND_LOCK_TIME) + 1);
         await helpers.mine();
         await expect(
             crowdFund2.getFund()
         ).to.be.revertedWith("this function can only be called by owner");
+    });
+
+    it("test getFund: window open", async () => {
+        await crowdFund2.fund({value: ethers.parseEther(process.env.TEST_FUND_AMOUNT_DONE)});
+        await expect(
+            crowdFund1.getFund()
+        ).to.be.revertedWith("can not call this function in the window");
     });
 });
