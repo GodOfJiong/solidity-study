@@ -58,10 +58,15 @@ describe("test CrowdFund", async () => {
     });
 
     it("test fund: done", async () => {
-        assert.equal((await crowdFund.getAccountBalance(testAccount1)), 0);
         const fundAmtInWei = ethers.parseEther(process.env.TEST_FUND_AMOUNT_PASS);
         await crowdFund1.fund({value: fundAmtInWei});
-        assert.equal((await crowdFund.getAccountBalance(testAccount1)), fundAmtInWei);
+        let accountBalance1 = await crowdFund.getAccountBalance(testAccount1); // 此处指账户1在合约中的余额。
+        let contractBalance = await ethers.provider.getBalance(crowdFund.target);
+        assert.equal(accountBalance1, fundAmtInWei);
+        assert.equal(contractBalance, fundAmtInWei);
+        await crowdFund1.fund({value: fundAmtInWei});
+        assert.equal(await crowdFund.getAccountBalance(testAccount1), accountBalance1 + fundAmtInWei);
+        assert.equal(await ethers.provider.getBalance(crowdFund.target), contractBalance + fundAmtInWei);
     });
 
     it("test getFund: not owner", async () => {
@@ -94,8 +99,16 @@ describe("test CrowdFund", async () => {
         await crowdFund2.fund({value: fundAmtInWei});
         await helpers.time.increase(Number(process.env.CROWD_FUND_LOCK_TIME) + 1);
         await helpers.mine();
+        console.log(`owner balance before getFund: ${await ethers.provider.getBalance(testAccount1)}`); // 此处指账户1自身的余额。
         await expect(
             crowdFund1.getFund()
         ).to.emit(crowdFund, "withdrawDone").withArgs(fundAmtInWei);
+
+        // 严格来说，应该是要验证：getFund之后，账户1自身的余额 = 账户1之前的余额 + 合约的余额（此处为fundAmtInWei）。
+        // 但因为通过账户1调用getFund的操作本身，也会产生手续费从账户1的余额中扣除，手续费具体数额不定。
+        // 因此，没法进行上述验证，只好象征性打印一下账户1最新的余额。
+        assert.equal(await ethers.provider.getBalance(crowdFund.target), 0);
+        console.log(`owner balance after getFund: ${await ethers.provider.getBalance(testAccount1)}`);
+        assert.equal(await crowdFund.getAccountBalance(testAccount1), 0);
     });
 });
