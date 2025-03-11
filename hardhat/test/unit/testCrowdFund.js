@@ -88,4 +88,14 @@ describe("test CrowdFund", async () => {
             crowdFund1.getFund()
         ).to.be.revertedWith("target fund not reached");
     });
+
+    it("test getFund: done", async () => {
+        const fundAmtInWei = ethers.parseEther(process.env.CONTRACT_BALANCE_PASS);
+        await crowdFund2.fund({value: fundAmtInWei});
+        await helpers.time.increase(Number(process.env.CROWD_FUND_LOCK_TIME) + 1);
+        await helpers.mine();
+        await expect(
+            crowdFund1.getFund()
+        ).to.emit(crowdFund, "withdrawDone").withArgs(fundAmtInWei);
+    });
 });

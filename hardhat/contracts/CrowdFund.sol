@@ -22,7 +22,9 @@ contract CrowdFund {
     uint256 lockTime;
 
     address fundTokenAddr;
-    bool public getFundFlag = false;
+    bool withdrawFlag = false;
+
+    event withdrawDone(uint256);
 
     constructor (uint256 pLockTime, address dataFeedAddr) {
         dataFeed = AggregatorV3Interface(dataFeedAddr);
@@ -66,6 +68,10 @@ contract CrowdFund {
         return lockTime;
     }
 
+    function getWithdrawFlag () public view returns (bool) {
+        return withdrawFlag;
+    }
+
 
     
     function fund () external payable {
@@ -94,17 +100,18 @@ contract CrowdFund {
     }    
 
     function getFund () external windowClosed onlyOwner {
-        require(convertEthToDollar(address(this).balance) >= TARGET_FUND, "target fund not reached");
-        // payable(msg.sender).transfer(address(this).balance);
+        uint256 balance = address(this).balance;
+        require(convertEthToDollar(balance) >= TARGET_FUND, "target fund not reached");
+        // payable(msg.sender).transfer(balance);
+        // withdrawFlag = true;
 
-        // bool flag = payable(msg.sender).send(address(this).balance);
-        // require(flag, "transaction failed");
+        // withdrawFlag = payable(msg.sender).send(balance);
+        // require(withdrawFlag, "transaction failed");
 
-        bool flag;
-        (flag, ) = payable(msg.sender).call{value: address(this).balance}("");
-        require(flag, "transaction failed");
+        (withdrawFlag, ) = payable(msg.sender).call{value: balance}("");
+        require(withdrawFlag, "transaction failed");
         accountBalanceMap[msg.sender] = 0;
-        getFundFlag = true;
+        emit withdrawDone(balance);
     }
 
     function refund () external windowClosed {
