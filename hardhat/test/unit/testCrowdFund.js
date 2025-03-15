@@ -111,4 +111,44 @@ describe("test CrowdFund", async () => {
         console.log(`owner balance after getFund: ${await ethers.provider.getBalance(testAccount1)}`);
         assert.equal(await crowdFund.getAccountBalance(testAccount1), 0);
     });
+
+    it("test refund: window open", async () => {
+        await crowdFund1.fund({value: ethers.parseEther(process.env.CONTRACT_BALANCE_FAIL)});
+        await expect(
+            crowdFund1.refund()
+        ).to.be.revertedWith("can not call this function in the window");
+    });
+
+    it("test refund: target reach", async () => {
+        await crowdFund1.fund({value: ethers.parseEther(process.env.CONTRACT_BALANCE_PASS)});
+        await helpers.time.increase(Number(process.env.CROWD_FUND_LOCK_TIME) + 1);
+        await helpers.mine();
+        await expect(
+            crowdFund1.refund()
+        ).to.be.revertedWith("target fund reached");
+    });
+
+    it("test refund: no fund", async () => {
+        await crowdFund1.fund({value: ethers.parseEther(process.env.CONTRACT_BALANCE_FAIL)});
+        await helpers.time.increase(Number(process.env.CROWD_FUND_LOCK_TIME) + 1);
+        await helpers.mine();
+        await expect(
+            crowdFund2.refund()
+        ).to.be.revertedWith("you have no fund");
+    });
+
+    it("test refund: done", async () => {
+        const fundAmtInWei = ethers.parseEther(process.env.CONTRACT_BALANCE_FAIL);
+        await crowdFund1.fund({value: fundAmtInWei});
+        await helpers.time.increase(Number(process.env.CROWD_FUND_LOCK_TIME) + 1);
+        await helpers.mine();
+        console.log(`account balance before refund: ${await ethers.provider.getBalance(testAccount1)}`);
+        await expect(
+            crowdFund1.refund()
+        ).to.emit(crowdFund, "refundDone").withArgs(testAccount1, fundAmtInWei);
+
+        assert.equal(await ethers.provider.getBalance(crowdFund.target), 0);
+        console.log(`account balance after refund: ${await ethers.provider.getBalance(testAccount1)}`);
+        assert.equal(await crowdFund.getAccountBalance(testAccount1), 0);
+    });
 });

@@ -25,6 +25,7 @@ contract CrowdFund {
     bool withdrawFlag = false;
 
     event withdrawDone(uint256);
+    event refundDone(address, uint256);
 
     constructor (uint256 pLockTime, address dataFeedAddr) {
         dataFeed = AggregatorV3Interface(dataFeedAddr);
@@ -115,12 +116,14 @@ contract CrowdFund {
     }
 
     function refund () external windowClosed {
+        uint256 accountBalance = accountBalanceMap[msg.sender];
         require(convertEthToDollar(address(this).balance) < TARGET_FUND, "target fund reached");
-        require(accountBalanceMap[msg.sender] > 0, "you have no fund");
+        require(accountBalance > 0, "you have no fund"); 
         bool flag;
-        (flag, ) = payable(msg.sender).call{value: accountBalanceMap[msg.sender]}("");
+        (flag, ) = payable(msg.sender).call{value: accountBalance}("");
         require(flag, "transaction failed");
         accountBalanceMap[msg.sender] = 0;
+        emit refundDone(msg.sender, accountBalance);
     }
 
     function setFundTokenAddr (address pFundTokenAddr) public onlyOwner {
