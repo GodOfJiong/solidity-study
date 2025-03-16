@@ -1,8 +1,9 @@
 const {ethers, deployments, getNamedAccounts} = require("hardhat");
 const {assert, expect} = require("chai");
 const helpers = require("@nomicfoundation/hardhat-network-helpers");
-const {devNetList, netCfgMap} = require("../../complexConfig");
+const {devNetList} = require("../../complexConfig");
 
+// 一般而言，单元测试在本地环境下进行。
 if (devNetList.includes(hre.network.name)) {
     describe("unit test CrowdFund", async () => {
         let testAccount1;
@@ -23,11 +24,8 @@ if (devNetList.includes(hre.network.name)) {
             crowdFund = await ethers.getContractAt("CrowdFund", crowdFundDeploy.address);
             crowdFund1 = await ethers.getContract("CrowdFund", testAccount1);
             crowdFund2 = await ethers.getContract("CrowdFund", testAccount2);
+            dataFeedAddr = (await deployments.get("MockV3Aggregator")).address;
 
-            dataFeedAddr =
-                devNetList.includes(hre.network.name) ?
-                (await deployments.get("MockV3Aggregator")).address :
-                netCfgMap[hre.network.config.chainId].dataFeed.usdPerEth;
             console.log(`
                 address: ${crowdFund.target},
                 deploy time: ${await crowdFund.getDeployTime()},

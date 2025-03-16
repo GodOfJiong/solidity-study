@@ -1,18 +1,15 @@
 const {ethers, deployments, getNamedAccounts} = require("hardhat");
 const {expect} = require("chai");
-const {devNetList, netCfgMap} = require("../../complexConfig");
+const {devNetList} = require("../../complexConfig");
 
+// 一般而言，集成测试在正式网络上进行。
 if (!devNetList.includes(hre.network.name)) {
     describe("integration test CrowdFund", async () => {
         let testAccount1;
-        let testAccount2;
-        let dataFeedAddr;
         let crowdFund;
         let crowdFund1;
-        let crowdFund2;
         beforeEach(async () => {
             testAccount1 = (await getNamedAccounts()).testAccount1;
-            testAccount2 = (await getNamedAccounts()).testAccount2;
 
             // 当初在对crowdFund切换账户，以调用fund的时候，使用的是connect，也即：crowdFund.connect(testAccount1).fund(...)；
             // 但要注意，这里的testAccount1是从ethers.getSigners()拿到的signer对象，而非账户地址；
@@ -21,12 +18,7 @@ if (!devNetList.includes(hre.network.name)) {
             const crowdFundDeploy = await deployments.get("CrowdFund");
             crowdFund = await ethers.getContractAt("CrowdFund", crowdFundDeploy.address);
             crowdFund1 = await ethers.getContract("CrowdFund", testAccount1);
-            crowdFund2 = await ethers.getContract("CrowdFund", testAccount2);
 
-            dataFeedAddr =
-                devNetList.includes(hre.network.name) ?
-                (await deployments.get("MockV3Aggregator")).address :
-                netCfgMap[hre.network.config.chainId].dataFeed.usdPerEth;
             console.log(`
                 address: ${crowdFund.target},
                 deploy time: ${await crowdFund.getDeployTime()},
