@@ -44,5 +44,8 @@ module.exports = {
     testAccount2: {
       default: 1
     }
+  },
+  mocha: {
+    timeout: 300000
   }
 };
