@@ -6,7 +6,7 @@ task("deployCrowdFund", "deploy & verify CrowdFund").setAction(async (taskArgs, 
     let dataFeedAddr;
     if (devNetList.includes(hre.network.name)) {
         const dataFeedFactory = await ethers.getContractFactory("MockV3Aggregator");
-        console.log("detaFeed deploy start");
+        console.log("dataFeed deploy start");
         const dataFeed = await dataFeedFactory.deploy(Number(process.env.MOCK_DATA_FEED_PRECISION), Number(process.env.MOCK_DATA_FEED_PRICE));
         await dataFeed.waitForDeployment();
         dataFeedAddr = dataFeed.target;
