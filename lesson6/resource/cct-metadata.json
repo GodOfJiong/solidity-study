@@ -1,0 +1,11 @@
+{
+    "name": "radio marker",
+    "description": "Pay attention to radioactivity nearby.",
+    "external_url": "https://openseacreatures.io/3",
+    "image": "https://architectural-lavender-guan.myfilebase.com/ipfs/QmewSG8923fHuR2LjYdWd6CR1NkxQUcvf1mcVaZf61bfv6",
+    "attributes": [
+        {"trait_type": "marker-type", "value": "warn"},
+        {"trait_type": "marker-level", "value": "defcon-1"},
+        {"trait_type": "range", "value": "ultraviolet|X|gamma"}
+    ]
+}

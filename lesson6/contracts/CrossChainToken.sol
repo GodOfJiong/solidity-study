@@ -9,22 +9,18 @@ import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract CrossChainToken is ERC721, ERC721Burnable, ERC721Enumerable, ERC721URIStorage, Ownable {
-    
+
+    string private constant META_DATA = "ipfs://QmcJ9q54KRgmgjsLW79w2nkMqQ66YXXfhHdptbwLwkBzyd";
     uint256 private _nextTokenId;
 
-    constructor(address initialOwner)
-        ERC721("CrossChainToken", "CCT")
-        Ownable(initialOwner)
-    {}
+    constructor (string memory tokenName, string memory tokenSymbol) ERC721(tokenName, tokenSymbol) Ownable(msg.sender) {
+        _nextTokenId = 0;
+    }
 
-    function safeMint(address to, string memory uri)
-        public
-        onlyOwner
-        returns (uint256)
-    {
+    function safeMint (address to) public onlyOwner returns (uint256) {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
+        _setTokenURI(tokenId, META_DATA);
         return tokenId;
     }
 
