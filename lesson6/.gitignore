@@ -1,4 +1,4 @@
-.env
+.vscode
 
 # npm files
 package-lock.json
