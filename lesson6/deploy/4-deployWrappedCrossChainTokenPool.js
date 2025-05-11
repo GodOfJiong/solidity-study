@@ -1,4 +1,4 @@
-const {ethers} = require("ethers");
+const {ethers} = require("hardhat");
 const {devNetList, netCfgMap} = require("../complexConfig");
 
 module.exports = async ({network, getNamedAccounts, deployments}) => {
