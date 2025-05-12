@@ -40,5 +40,18 @@ if (devNetList.includes(hre.network.name)) {
         it("test WCCTP receive CCIP msg & mint WCCT", async () => {
             expect(await wrappedCrossChainToken.ownerOf(0)).to.equal(testAccount1);
         });
+
+        it("test WCCT transfered & burned in WCCTP, also tell CCTP", async () => {
+            await wrappedCrossChainToken.approve(wrappedCrossChainTokenPool.target, 0);
+
+            // 试验证明，在本地环境使用CCIP模拟器的时候，CCIP流程是不需要手续费的。
+            // await ccipSimulator.requestLinkFromFaucet(wrappedCrossChainTokenPool.target, ethers.parseEther(process.env.TEST_POOL_FUND));
+            await wrappedCrossChainTokenPool.burnAndSendToken(0, testAccount1, chainSelector, crossChainTokenPool.target);
+            expect(await wrappedCrossChainToken.totalSupply()).to.equal(0);
+        });
+
+        it("test CCTP receive CCIP msg & release CCT", async () => {
+            expect(await crossChainToken.ownerOf(0)).to.equal(testAccount1);
+        });
     });
 }
