@@ -14,12 +14,12 @@ if (devNetList.includes(hre.network.name)) {
         let chainSelector;
         before(async () => {
             testAccount1 = (await getNamedAccounts()).testAccount1;
-            await deployments.fixture(["all"]);
-            ccipSimulator = await ethers.getContract("CCIPLocalSimulator", testAccount1);
-            crossChainToken = await ethers.getContract("CrossChainToken", testAccount1);
-            crossChainTokenPool = await ethers.getContract("CrossChainTokenPool", testAccount1);
-            wrappedCrossChainToken = await ethers.getContract("WrappedCrossChainToken", testAccount1);
-            wrappedCrossChainTokenPool = await ethers.getContract("WrappedCrossChainTokenPool", testAccount1);
+            await deployments.fixture([process.env.DEPLOY_TAG_ALL]);
+            ccipSimulator = await ethers.getContract(process.env.CONTRACT_NAME_MOCK_CCIP, testAccount1);
+            crossChainToken = await ethers.getContract(process.env.CONTRACT_NAME_CCT, testAccount1);
+            crossChainTokenPool = await ethers.getContract(process.env.CONTRACT_NAME_CCTP, testAccount1);
+            wrappedCrossChainToken = await ethers.getContract(process.env.CONTRACT_NAME_WCCT, testAccount1);
+            wrappedCrossChainTokenPool = await ethers.getContract(process.env.CONTRACT_NAME_WCCTP, testAccount1);
             chainSelector = (await ccipSimulator.configuration()).chainSelector_;
         });
 

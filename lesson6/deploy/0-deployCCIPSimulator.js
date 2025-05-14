@@ -5,7 +5,7 @@ module.exports = async ({network, getNamedAccounts, deployments}) => {
     if (devNetList.includes(network.name)) {
         const {testAccount1} = await getNamedAccounts();
         log("deploy CCIPSimulator start");
-        await deploy("CCIPLocalSimulator", {
+        await deploy(process.env.CONTRACT_NAME_MOCK_CCIP, {
             from: testAccount1,
             args: [],
             log: true
@@ -17,4 +17,4 @@ module.exports = async ({network, getNamedAccounts, deployments}) => {
     }
 }
 
-module.exports.tags = ["all", "sourcechain", "destinationchain"];
+module.exports.tags = [process.env.DEPLOY_TAG_ALL, process.env.DEPLOY_TAG_SRC_CHAIN, process.env.DEPLOY_TAG_DEST_CHAIN];
